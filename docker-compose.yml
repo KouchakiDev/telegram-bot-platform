@@ -1,0 +1,71 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?set MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER:?set MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u${MYSQL_USER:?set MYSQL_USER}", "-p${MYSQL_PASSWORD:?set MYSQL_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+aiomysql://${MYSQL_USER:?set MYSQL_USER}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:?set MYSQL_DATABASE}
+    command: ["platform-migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    build: .
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    environment:
+      DATABASE_URL: mysql+aiomysql://${MYSQL_USER:?set MYSQL_USER}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:?set MYSQL_DATABASE}
+    command: ["platform-web"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  bot:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+aiomysql://${MYSQL_USER:?set MYSQL_USER}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:?set MYSQL_DATABASE}
+    command: ["platform-bot"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  worker:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+aiomysql://${MYSQL_USER:?set MYSQL_USER}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:?set MYSQL_DATABASE}
+    command: ["platform-worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

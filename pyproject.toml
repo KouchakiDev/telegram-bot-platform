@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "telegram-bot-platform"
+version = "1.1.0"
+description = "A modular, secure foundation for production-grade Telegram bots and Mini Apps."
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+license = { file = "LICENSE" }
+authors = [{ name = "KouchakiDev" }]
+keywords = ["telegram", "telegram-bot", "python", "fastapi", "mini-app", "automation", "asyncio"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: FastAPI",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Communications",
+  "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Homepage = "https://github.com/KouchakiDev/telegram-bot-platform"
+Repository = "https://github.com/KouchakiDev/telegram-bot-platform"
+Issues = "https://github.com/KouchakiDev/telegram-bot-platform/issues"
+
+dependencies = [
+  "alembic>=1.18,<2",
+  "aiomysql>=0.2,<1",
+  "aiosqlite>=0.21,<1",
+  "asyncpg>=0.30,<1",
+  "fastapi>=0.128,<1",
+  "itsdangerous>=2.2,<3",
+  "pydantic>=2.13,<3",
+  "pydantic-settings>=2.14,<3",
+  "python-multipart>=0.0.20,<1",
+  "python-telegram-bot[rate-limiter]>=22.8,<23",
+  "sqlalchemy>=2.0.50,<3",
+  "uvicorn[standard]>=0.40,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.3,<2",
+  "mypy>=1.18,<2",
+  "pip-audit>=2.9,<3",
+  "pytest>=9,<10",
+  "pytest-asyncio>=1.3,<2",
+  "pytest-cov>=7,<8",
+  "ruff>=0.14,<1",
+]
+
+[project.scripts]
+platform-bot = "app.telegram.bot:main"
+platform-web = "app.web.app:main"
+platform-worker = "app.workers.main:main"
+platform-migrate = "scripts.migrate:main"
+platform-import = "scripts.import_json:main"
+platform-bootstrap-admin = "scripts.bootstrap_admin:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app", "frontend", "migrations", "scripts"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "S"]
+ignore = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+exclude = ["^migrations/"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q --disable-warnings --maxfail=1"

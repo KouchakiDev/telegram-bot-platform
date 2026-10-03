@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e1621">
+  <title>Telegram Platform</title>
+  <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="card hero">
+      <div>
+        <p class="eyebrow">Telegram Mini App</p>
+        <h1 id="greeting">Loading…</h1>
+        <p id="status">Authenticating with Telegram…</p>
+      </div>
+      <button id="close" class="secondary" type="button">Close</button>
+    </header>
+
+    <section class="card">
+      <div class="section-header">
+        <h2>Published content</h2>
+        <button id="refresh" class="secondary" type="button">Refresh</button>
+      </div>
+      <div id="content" class="content-list"></div>
+    </section>
+
+    <section id="admin" class="card hidden">
+      <div class="section-header">
+        <h2>Admin</h2>
+        <button id="summary" class="secondary" type="button">Summary</button>
+      </div>
+      <form id="create-form">
+        <label>Title<input id="title" maxlength="255" required></label>
+        <label>Body<textarea id="body" maxlength="50000" rows="5" required></textarea></label>
+        <button class="primary" type="submit">Create draft</button>
+      </form>
+      <pre id="admin-output" class="output"></pre>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
