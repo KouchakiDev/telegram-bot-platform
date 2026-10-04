@@ -59,7 +59,8 @@ For administrators, the console provides:
 - Registered chat inspection and module toggles
 - User registry and persistent role management
 - Read-only audit activity
-- Safe runtime settings view with secrets excluded
+- Full settings control plane with typed values, secret masking, reset-to-default, and restart semantics
+- Full bilingual translation catalog editor for English/Persian strings
 
 The backend endpoints are under `/api/` and require the signed session cookie. Telegram `initData` is verified on the server before that session is issued.
 
@@ -230,9 +231,9 @@ docker compose up --build
 
 The default web endpoint is `http://localhost:8000`.
 
-## Parity runtime
+## Multi-bot runtime
 
-The modern entry points (`platform-bot`, `platform-web`, and `platform-worker`) expose the new typed platform foundation. The full preserved production feature set remains available through the opt-in compatibility runner so migration can happen incrementally without losing legacy workflows:
+The platform uses one shared database, localization catalog, settings registry, audit trail, and Mini App. The modern core bot and the preserved admin/client/staff compatibility bots can run together without creating separate configuration silos. The compatibility runner is explicit so each token remains an independent Telegram update consumer:
 
 ```bash
 platform-run-compat admin
@@ -241,7 +242,7 @@ platform-run-compat staff
 platform-run-compat auto-responder
 ```
 
-Use `platform-run-compat` when you need the legacy-compatible workflow surface; use the modern entry points for new development.
+Use the compatibility runners for the preserved admin/client/staff workflows. Each of those bots also exposes `/app`, which opens the same authenticated Mini App control plane according to the user role and bot module profile.
 
 ## Original feature parity
 
@@ -265,6 +266,14 @@ platform-run-compat staff
 platform-run-compat auto-responder
 ```
 
+## Global bilingual control plane
+
+All modern user-facing text is referenced by stable English localization keys. English and Persian values are kept as a pair, placeholders are validated for parity, and the administrator can edit every catalog entry from the Mini App under `Translations`. Compatibility strings are represented by the generated `legacy.text.*` catalog and are passed through `LocalizedTeleBot`, so the legacy bots use the same centralized localization/override mechanism instead of maintaining a second translation system.
+
+Settings use stable English dot-keys such as `telegram.core.token`, `database.url`, `bots.client.token`, and `security.rate_limit_requests`. The Settings screen shows type, category, override state, secret masking, and whether a restart is required. Secrets are never returned in clear text by the settings API.
+
+The Mini App session is authenticated from Telegram `initData`, signed server-side, and bound to the bot token that verified the request. The `/api/me` response also carries the effective bot module map, so the navigation reflects the capabilities configured for that bot.
+
 ## Environment configuration
 
 Configuration is loaded through `pydantic-settings`. The application supports:
@@ -281,11 +290,12 @@ Use `.env` for local secrets. In CI/CD or production, prefer the platform's secr
 | Area | Variables |
 | --- | --- |
 | Application | `ENVIRONMENT`, `APP_NAME`, `APP_SECRET_KEY` |
-| Telegram | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `DEFAULT_CHANNEL_ID` |
+| Telegram | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `DEFAULT_CHANNEL_ID`, `ADMIN_USER_IDS` |
 | Telegram limits | `TELEGRAM_CONCURRENT_UPDATES`, `TELEGRAM_CONNECTION_POOL_SIZE`, `TELEGRAM_*RATE*`, `TELEGRAM_TIMEOUT_SECONDS` |
 | Access | `ADMIN_USER_IDS`, `RATE_LIMIT_REQUESTS`, `RATE_LIMIT_WINDOW_SECONDS` |
 | Database | `DATABASE_URL`, `DB_POOL_SIZE`, `DB_MAX_OVERFLOW`, `DB_POOL_RECYCLE` |
 | Mini App | `WEB_APP_URL`, `SESSION_*`, `CORS_ALLOWED_ORIGINS` |
+| Compatibility bots | `BOT_ADMIN_TOKEN`, `BOT_CLIENT_TOKEN`, `BOT_STAFF_TOKEN`, `BOT_AUTO_RESPONDER_TOKEN` |
 | Worker | `SCHEDULER_ENABLED`, `WORKER_*`, `OUTBOX_MAX_ATTEMPTS`, `AUTO_REPLY_*` |
 | Logging | `LOG_LEVEL`, `LOG_JSON` |
 

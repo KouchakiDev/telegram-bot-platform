@@ -4,11 +4,11 @@ import asyncio
 
 from sqlalchemy import select
 
-from app.core.config import Settings
-from app.core.container import Container
-from app.domain.enums import UserRole
-from app.infrastructure.db.models import AdminModel
-from app.infrastructure.repositories.roles import UserRoleRepository
+from telegram_bot_platform.core.config import Settings
+from telegram_bot_platform.core.container import Container
+from telegram_bot_platform.domain.enums import UserRole
+from telegram_bot_platform.infrastructure.db.models import AdminModel
+from telegram_bot_platform.infrastructure.repositories.roles import UserRoleRepository
 
 
 async def bootstrap() -> None:

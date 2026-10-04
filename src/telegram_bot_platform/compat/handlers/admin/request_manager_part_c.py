@@ -787,7 +787,7 @@ class RequestManagerPartCMixin:
                 raise ValueError("Media type mismatch or no media provided")
             if not new_file_id:
                 raise RuntimeError("Forwarding succeeded but returned empty file_id")
-            # TODO: replace with your real DB update call
+            # Persist the updated media field through the existing compatibility database adapter.
             self.db.update(self.current_request[chat_id][0],
                            {field: new_file_id},
                            "id = ?",

@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 from .client_runner_context import *
+from telegram_bot_platform.compat.miniapp import send_mini_app
 
 
 class ClientRunnerTelegramMixin:
     def _register_telegram_handlers(self) -> None:
+        @self.bot.message_handler(commands=["app"])
+        def _cmd_app(message: types.Message):
+            send_mini_app(self.bot, message)
+
         """Single universal message handler that pipes updates into the engine."""
         @self.bot.callback_query_handler(func=lambda call: call.data.startswith("photo_nav:"))
         def _on_photo_nav( call: types.CallbackQuery) -> None:

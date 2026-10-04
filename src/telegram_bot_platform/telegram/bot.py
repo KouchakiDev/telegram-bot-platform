@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from telegram import BotCommand, Update
+from telegram import BotCommand, BotCommandScopeDefault, Update
 from telegram.ext import AIORateLimiter, Application, ApplicationBuilder, ContextTypes
 
 from telegram_bot_platform.core.config import Settings
@@ -11,6 +11,7 @@ from telegram_bot_platform.telegram.modules.admin import AdminModule
 from telegram_bot_platform.telegram.modules.auto_reply import AutoReplyModule
 from telegram_bot_platform.telegram.modules.common import CommonModule
 from telegram_bot_platform.telegram.modules.content import ContentModule
+from telegram_bot_platform.telegram.i18n import reload_catalog, text
 
 logger = logging.getLogger("platform.telegram")
 
@@ -39,13 +40,19 @@ def build_application(settings: Settings | None = None) -> tuple[Application, Co
 
     async def post_init(app: Application) -> None:
         configure_logging(resolved.log_level, resolved.log_json)
-        await app.bot.set_my_commands([
-            BotCommand("start", "Start"),
-            BotCommand("app", "Open Mini App"),
-            BotCommand("content", "Published content"),
-            BotCommand("help", "Help"),
-            BotCommand("admin", "Admin summary"),
-        ])
+        reload_catalog()
+        for locale in ("en", "fa"):
+            await app.bot.set_my_commands(
+                [
+                    BotCommand("start", text("bot.commands.start", locale)),
+                    BotCommand("app", text("bot.commands.app", locale)),
+                    BotCommand("content", text("bot.commands.content", locale)),
+                    BotCommand("help", text("bot.commands.help", locale)),
+                    BotCommand("admin", text("bot.commands.admin", locale)),
+                ],
+                scope=BotCommandScopeDefault(),
+                language_code=locale,
+            )
         logger.info("Telegram application initialized")
 
     builder = builder.post_init(post_init)

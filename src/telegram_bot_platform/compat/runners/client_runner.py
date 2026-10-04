@@ -11,10 +11,10 @@ class ClientRunner(ClientRunnerLifecycleMixin, ClientRunnerRequestFlowMixin, Cli
     def __init__(self, bot_token: str, flow_config: Dict[str, Dict[str, Any]], db: DatabaseManager) -> None:  # noqa: D401
         self.log = CustomLogger("ClientRunner")
         # Internal implementation note: legacy behavior is preserved during modernization.
-        self.bot: TeleBot = TeleBot(bot_token, parse_mode="HTML")
+        self.bot: TeleBot = LocalizedTeleBot(bot_token, parse_mode="HTML")
         # Internal implementation note: legacy behavior is preserved during modernization.
         self.db: DatabaseManager = db
-        self.admin_bot = TeleBot(BOT_ADMIN_TOKEN)
+        self.admin_bot = LocalizedTeleBot(BOT_ADMIN_TOKEN)
         # Internal implementation note: legacy behavior is preserved during modernization.
         self._contract: Dict[str, Dict[str, Any]] = self._collect_step_handlers()
         self.starter = Starter(self.db, self.bot, welcome_cb=self._pick_random_emoji)

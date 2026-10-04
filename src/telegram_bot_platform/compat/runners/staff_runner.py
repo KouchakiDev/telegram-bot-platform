@@ -76,10 +76,10 @@ class StaffBot:
 
     # ------------------------------------------------------------------
     def __init__(self, tokens: Dict[str, str]) -> None:
-        self.bot = TeleBot(tokens["staff"])
+        self.bot = LocalizedTeleBot(tokens["staff"])
         self.bots = {
-            "client": TeleBot(tokens["client"]),
-            "admin": TeleBot(tokens["admin"]),
+            "client": LocalizedTeleBot(tokens["client"]),
+            "admin": LocalizedTeleBot(tokens["admin"]),
         }
         self.db = DatabaseManager(**DB_PARAMS)
         self._recent_starts = {}
@@ -92,6 +92,10 @@ class StaffBot:
     # Internal implementation note: legacy behavior is preserved during modernization.
     # ------------------------------------------------------------------
     def _register_handlers(self) -> None:
+        @self.bot.message_handler(commands=["app"])
+        def _cmd_app(message: types.Message):
+            send_mini_app(self.bot, message)
+
         """Legacy-compatible behavior preserved for this callable."""
 
         @self.bot.message_handler(commands=["start"])

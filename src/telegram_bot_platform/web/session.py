@@ -10,13 +10,18 @@ class SessionSigner:
         self.max_age_seconds = max_age_seconds
         self.serializer = URLSafeTimedSerializer(secret_key, salt="telegram-platform-session")
 
-    def issue(self, telegram_id: int) -> str:
-        return self.serializer.dumps({"sub": telegram_id})
+    def issue(self, telegram_id: int, bot_key: str = "core", locale: str = "en") -> str:
+        return self.serializer.dumps({"sub": telegram_id, "bot": bot_key, "locale": locale})
 
-    def verify(self, token: str) -> int:
+    def verify_context(self, token: str) -> tuple[int, str, str]:
         try:
             payload = self.serializer.loads(token, max_age=self.max_age_seconds)
             subject = int(payload["sub"])
+            bot_key = str(payload.get("bot", "core"))
+            locale = str(payload.get("locale", "en"))
         except (BadSignature, SignatureExpired, KeyError, TypeError, ValueError) as exc:
             raise AuthenticationError("Invalid or expired session") from exc
-        return subject
+        return subject, bot_key, locale
+
+    def verify(self, token: str) -> int:
+        return self.verify_context(token)[0]

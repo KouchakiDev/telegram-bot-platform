@@ -112,7 +112,7 @@ def start_autoresponser_bot() -> None:
     log.info("[Start] Database initialized and logger set.")
 
     try:
-        bot = TeleBot(BOT_AUTOREPONSER_TOKEN, parse_mode="HTML")
+        bot = LocalizedTeleBot(BOT_AUTOREPONSER_TOKEN, parse_mode="HTML")
         log.debug(f"[Start] Bot token: {BOT_AUTOREPONSER_TOKEN[:10]}... (hidden)")
         responder = AutoResponder(bot, db, log, BLACKLIST_QUESTIONS)
         log.info("[Start] AutoResponder instance created. Starting run...")

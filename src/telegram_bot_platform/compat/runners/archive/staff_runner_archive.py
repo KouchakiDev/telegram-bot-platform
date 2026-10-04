@@ -13,6 +13,7 @@ sys.path[:0] = [BASE_DIR, os.path.join(BASE_DIR, '..')]
 
 # Internal implementation note: legacy behavior is preserved during modernization.
 import telebot
+from telegram_bot_platform.compat.localization import LocalizedTeleBot
 from telebot import types
 from telegram_bot_platform.compat.config.settings import *          # Internal implementation note: legacy behavior is preserved during modernization.
 from telegram_bot_platform.compat.logging_ext.logger import CustomLogger
@@ -41,9 +42,9 @@ class StaffBot:
     def __init__(self, bots_token: Dict[str, str]) -> None:
         # 1) multi-bot dict
         self.bots = {
-            "moshtari":  telebot.TeleBot(bots_token["moshtari"]),
-            "admin":     telebot.TeleBot(bots_token["admin"]),
-            "staff": telebot.TeleBot(bots_token["staff"]),
+            "moshtari":  LocalizedTeleBot(bots_token["moshtari"]),
+            "admin":     LocalizedTeleBot(bots_token["admin"]),
+            "staff": LocalizedTeleBot(bots_token["staff"]),
         }
         self.bot: telebot.TeleBot = self.bots["staff"]
 

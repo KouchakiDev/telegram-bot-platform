@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "telegram-bot-platform"
-version = "2.1.2"
+version = "2.2.0"
 description = "A production-grade, domain-neutral Telegram bot platform with preserved feature parity and a modern typed architecture."
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
@@ -85,12 +85,18 @@ platform-migrate = "scripts.migrate:main"
 platform-import = "scripts.import_json:main"
 platform-bootstrap-admin = "scripts.bootstrap_admin:main"
 platform-run-compat = "scripts.run_compat:main"
+platform-validate = "scripts.validate_platform:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/telegram_bot_platform", "scripts"]
+[tool.hatch.build.targets.wheel.force-include]
+"resources" = "resources"
+"frontend" = "frontend"
+"migrations" = "migrations"
+"docs" = "docs"
 
 [tool.hatch.build.targets.sdist]
-include = ["src", "scripts", "migrations", "frontend", "tests", "docs", "README.md", "LICENSE", "VERSION", "pyproject.toml"]
+include = ["src", "scripts", "migrations", "frontend", "resources", "tests", "docs", "README.md", "LICENSE", "VERSION", "pyproject.toml"]
 
 [tool.ruff]
 line-length = 100

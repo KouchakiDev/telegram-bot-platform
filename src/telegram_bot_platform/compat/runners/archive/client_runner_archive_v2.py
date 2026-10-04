@@ -5,6 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, '..'))
 from telebot import TeleBot, types
+from telegram_bot_platform.compat.localization import LocalizedTeleBot
 import threading
 import random
 from telebot.types import ReplyKeyboardMarkup  , ReplyKeyboardRemove
@@ -52,7 +53,7 @@ class SimpleClientRunner:
     def __init__(self, bot: TeleBot, db: DatabaseManager):
         """Legacy-compatible behavior preserved for this callable."""
         self.bot = bot
-        self.admin_bot = TeleBot(BOT_ADMIN_TOKEN)
+        self.admin_bot = LocalizedTeleBot(BOT_ADMIN_TOKEN)
         self.db = db
         self.storage_channel = STORAGE_CHANNEL
         self.state = {}
@@ -759,7 +760,7 @@ def start_client_bot():
     log.info("Initializing ClientBot...")
 
     # Internal implementation note: legacy behavior is preserved during modernization.
-    main_menu = SimpleClientRunner(TeleBot(BOT_CLIENT_TOKEN), db)
+    main_menu = SimpleClientRunner(LocalizedTeleBot(BOT_CLIENT_TOKEN), db)
     log.info("Client Bot running started ...")
 
     # Internal implementation note: legacy behavior is preserved during modernization.

@@ -30,6 +30,7 @@ import time
 import random
 from telebot import types
 import telebot
+from telegram_bot_platform.compat.localization import LocalizedTeleBot
 import json
 from datetime import datetime, timedelta   # Internal implementation note: legacy behavior is preserved during modernization.
 # Internal implementation note: legacy behavior is preserved during modernization.
@@ -55,7 +56,7 @@ log = CustomLogger()  # log_file="C_bot.log")
 class ClientBot:
     def __init__(self, token, db: DatabaseManager):
         log.info("Bot inishilayz started ...")
-        self.bot = telebot.TeleBot(token)
+        self.bot = LocalizedTeleBot(token)
         self.db = db
         self.see_Rr = SeeRequestsHandler(self.bot, self.db)
         self.premium = PREMIUMManager(

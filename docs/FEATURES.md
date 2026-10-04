@@ -22,6 +22,6 @@ The base platform is deliberately reusable. Common capabilities are grouped belo
 | CRM/business workflows | Adapter-ready, not domain-specific | application modules |
 | AI/LLM features | Adapter-ready, not domain-specific | external service adapter |
 | Broadcast campaigns | Adapter-ready, not domain-specific | campaign module + worker |
-| Multi-bot control plane | Not included by default | separate orchestration layer |
+| Multi-bot control plane | Included | shared bot profiles + module registry + common Mini App/i18n/settings control plane |
 
 The goal is to avoid shipping every possible business feature into the core. A clean platform should make those features easy to add without forcing them onto every bot.

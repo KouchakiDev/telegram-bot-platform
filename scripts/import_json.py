@@ -5,12 +5,12 @@ import asyncio
 import json
 from pathlib import Path
 
-from app.application.services.content_service import ContentService
-from app.application.services.user_service import UserService
-from app.core.config import Settings
-from app.core.container import Container
-from app.domain.entities import ChatIdentity, UserIdentity
-from app.domain.enums import ChatType
+from telegram_bot_platform.application.services.content_service import ContentService
+from telegram_bot_platform.application.services.user_service import UserService
+from telegram_bot_platform.core.config import Settings
+from telegram_bot_platform.core.container import Container
+from telegram_bot_platform.domain.entities import ChatIdentity, UserIdentity
+from telegram_bot_platform.domain.enums import ChatType
 
 
 async def import_data(path: Path) -> None:

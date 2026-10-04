@@ -8,9 +8,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.core.config import Settings
-from app.infrastructure.db.base import Base
-from app.infrastructure.db import models  # noqa: F401
+from telegram_bot_platform.core.config import Settings
+from telegram_bot_platform.infrastructure.db.base import Base
+from telegram_bot_platform.infrastructure.db import models  # noqa: F401
 
 config = context.config
 settings = Settings()

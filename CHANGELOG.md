@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.0
+
+- Added a shared bilingual English/Persian localization control plane with stable English keys.
+- Added editable platform settings, translation pairs, bot profiles, and module registry to the Mini App.
+- Added server-side bot-bound Mini App sessions and per-bot module-aware navigation.
+- Added `/app` Mini App access to the preserved admin, client, and staff compatibility runners.
+- Added a compatibility localization catalog and `LocalizedTeleBot` wrapper for centralized legacy text/button overrides.
+- Added platform validation for locale parity, placeholders, frontend keys, compatibility catalog integrity, and settings descriptors.
+- Added Docker Compose profiles for compatibility bots and auto-responder alongside the modern core services.
+
+
 ## 2.1.2 - 2026-10-04
 
 - Replaced the placeholder Mini App with a complete responsive operations console.

@@ -3,52 +3,44 @@ from __future__ import annotations
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackQueryHandler, CommandHandler, ContextTypes
 
-from telegram_bot_platform.application.services.content_service import ContentService
 from telegram_bot_platform.core.container import Container
-from telegram_bot_platform.core.text import escape_telegram_html
-from telegram_bot_platform.infrastructure.repositories.content import ContentRepository
 from telegram_bot_platform.telegram.i18n import locale_for, text
+from telegram_bot_platform.application.services.content_service import ContentService
 
 
 class ContentModule:
-    CALLBACK_PREFIX = "content:"
-
     def __init__(self, container: Container) -> None:
         self.container = container
 
     def handlers(self) -> list[object]:
-        return [
-            CommandHandler("content", self.show_content),
-            CallbackQueryHandler(self.open_content, pattern=r"^content:\d+$"),
-        ]
+        return [CommandHandler("content", self.show), CallbackQueryHandler(self.open_item, pattern=r"^content:\d+$")]
 
-    async def show_content(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        if not update.effective_message:
-            return
-        user = update.effective_user
-        locale = locale_for(user.language_code if user else None, self.container.settings.default_locale)
-        async with self.container.database.session_factory() as session:
-            items = await ContentService(session).list_published(20)
+    async def show(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        locale = locale_for(update.effective_user.language_code if update.effective_user else None, self.container.settings.default_locale)
+        items = await self.container_content()
         if not items:
-            await update.effective_message.reply_text(text("no_content", locale))
+            if update.effective_message:
+                await update.effective_message.reply_text(text("bot.message.no_content", locale))
             return
-        buttons = [
-            [InlineKeyboardButton(str(item["title"]), callback_data=f"content:{item['id']}")]
-            for item in items[:20]
-        ]
-        await update.effective_message.reply_text(text("content", locale), reply_markup=InlineKeyboardMarkup(buttons))
+        buttons = [[InlineKeyboardButton(str(item["title"]), callback_data=f"content:{item['id']}")] for item in items]
+        if update.effective_message:
+            await update.effective_message.reply_text(text("bot.message.content", locale), reply_markup=InlineKeyboardMarkup(buttons))
 
-    async def open_content(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async def container_content(self) -> list[dict[str, object]]:
+        async with self.container.database.session_factory() as session:
+            return await ContentService(session).list_published(20)
+
+    async def open_item(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         query = update.callback_query
-        if not query or not query.data:
+        if query is None:
             return
         await query.answer()
-        content_id = int(query.data.split(":", 1)[1])
-        async with self.container.database.session_factory() as session:
-            item = await ContentRepository(session).get(content_id)
-        if item is None:
-            await query.edit_message_text(text("no_content", self.container.settings.default_locale))
+        try:
+            content_id = int((query.data or "").split(":", 1)[1])
+        except (IndexError, ValueError):
             return
-        safe_title = escape_telegram_html(item.title)
-        safe_body = escape_telegram_html(item.body)
-        await query.edit_message_text(f"<b>{safe_title}</b>\n\n{safe_body}", parse_mode="HTML")
+        async with self.container.database.session_factory() as session:
+            items = await ContentService(session).list_published(100)
+        item = next((row for row in items if row["id"] == content_id), None)
+        if item and query.message:
+            await query.message.reply_text(text("bot.message.content_item", locale, title=item["title"], body=item["body"]))

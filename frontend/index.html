@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111827">
   <meta name="color-scheme" content="light dark">
-  <title>Telegram Platform</title>
+  <title></title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -13,33 +13,34 @@
   <div id="app-shell" class="shell">
     <header class="topbar">
       <div class="brand-wrap">
-        <button id="menu-button" class="icon-button mobile-only" type="button" aria-label="Open navigation">
+        <button id="menu-button" class="icon-button mobile-only" type="button" aria-label="">
           <span></span><span></span><span></span>
         </button>
         <div class="brand-mark" aria-hidden="true">TP</div>
         <div>
-          <div class="brand-title">Telegram Platform</div>
-          <div id="page-subtitle" class="brand-subtitle">Operations Console</div>
+          <div id="brand-title" class="brand-title"></div>
+          <div id="page-subtitle" class="brand-subtitle"></div>
         </div>
       </div>
       <div class="top-actions">
-        <span id="connection-pill" class="pill pill-muted">Connecting</span>
-        <button id="close-button" class="ghost-button" type="button">Close</button>
+        <span id="connection-pill" class="pill pill-muted"></span>
+        <select id="locale-select" class="locale-select" aria-label=""></select>
+        <button id="close-button" class="ghost-button" type="button"></button>
       </div>
     </header>
 
     <div class="app-layout">
-      <aside id="sidebar" class="sidebar" aria-label="Primary navigation">
+      <aside id="sidebar" class="sidebar" aria-label="">
         <nav id="nav-list" class="nav-list"></nav>
         <div class="sidebar-footer">
           <div id="identity-card" class="identity-card">
             <div id="avatar" class="avatar">U</div>
             <div class="identity-text">
-              <strong id="identity-name">User</strong>
-              <span id="identity-role">Member</span>
+              <strong id="identity-name"></strong>
+              <span id="identity-role"></span>
             </div>
           </div>
-          <button id="logout-button" class="sidebar-action" type="button">Sign out</button>
+          <button id="logout-button" class="sidebar-action" type="button"></button>
         </div>
       </aside>
 
@@ -51,77 +52,55 @@
 
     <div id="loading-overlay" class="loading-overlay hidden" aria-hidden="true">
       <div class="spinner"></div>
-      <div id="loading-text">Loading…</div>
+      <div id="loading-text"></div>
     </div>
 
     <dialog id="content-dialog" class="modal">
       <form id="content-form" method="dialog" class="modal-card">
         <div class="modal-header">
           <div>
-            <div id="content-dialog-eyebrow" class="eyebrow">Content</div>
-            <h2 id="content-dialog-title">Create content</h2>
+            <div id="content-dialog-eyebrow" class="eyebrow"></div>
+            <h2 id="content-dialog-title"></h2>
           </div>
-          <button id="content-dialog-close" class="icon-button" type="button" aria-label="Close dialog">×</button>
+          <button id="content-dialog-close" class="icon-button" type="button" aria-label="">×</button>
         </div>
         <input id="content-id" type="hidden">
-        <label>
-          Title
-          <input id="content-title" name="title" maxlength="255" required autocomplete="off">
-        </label>
-        <label>
-          Body
-          <textarea id="content-body" name="body" rows="10" maxlength="50000" required></textarea>
-        </label>
+        <label><span data-i18n="content.title_label"></span><input id="content-title" name="title" maxlength="255" required autocomplete="off"></label>
+        <label><span data-i18n="content.body_label"></span><textarea id="content-body" name="body" rows="9" maxlength="50000" required></textarea></label>
         <div class="modal-actions">
-          <button id="content-cancel" class="secondary-button" type="button">Cancel</button>
-          <button class="primary-button" type="submit">Save</button>
+          <button id="content-cancel" class="ghost-button" type="button"></button>
+          <button id="content-submit" class="primary-button" type="submit"></button>
         </div>
+      </form>
+    </dialog>
+
+    <dialog id="schedule-dialog" class="modal">
+      <form id="schedule-form" method="dialog" class="modal-card">
+        <div class="modal-header"><div><div class="eyebrow" data-i18n="nav.scheduling"></div><h2 id="schedule-dialog-title"></h2></div><button id="schedule-close" class="icon-button" type="button" aria-label="">×</button></div>
+        <input id="schedule-content-id" type="hidden">
+        <label><span data-i18n="scheduling.chat_id"></span><input id="schedule-chat-id" type="number" required></label>
+        <label><span data-i18n="scheduling.text"></span><textarea id="schedule-text" rows="6"></textarea></label>
+        <label><span data-i18n="scheduling.content_id"></span><input id="schedule-content-input" type="number"></label>
+        <label><span data-i18n="scheduling.target_chat_id"></span><input id="schedule-target-chat-id" type="number"></label>
+        <label><span data-i18n="scheduling.run_at"></span><input id="schedule-run-at" type="datetime-local" required></label>
+        <label><span data-i18n="scheduling.parse_mode"></span><input id="schedule-parse-mode" maxlength="32" autocomplete="off"></label>
+        <div class="modal-actions"><button id="schedule-cancel" class="ghost-button" type="button"></button><button id="schedule-submit" class="primary-button" type="submit"></button></div>
       </form>
     </dialog>
 
     <dialog id="reply-dialog" class="modal">
       <form id="reply-form" method="dialog" class="modal-card">
-        <div class="modal-header">
-          <div>
-            <div class="eyebrow">Automation</div>
-            <h2 id="reply-dialog-title">Create auto reply</h2>
-          </div>
-          <button id="reply-dialog-close" class="icon-button" type="button" aria-label="Close dialog">×</button>
-        </div>
+        <div class="modal-header"><div><div class="eyebrow" data-i18n="nav.automation"></div><h2 id="reply-dialog-title"></h2></div><button id="reply-close" class="icon-button" type="button" aria-label="">×</button></div>
         <input id="reply-id" type="hidden">
-        <div class="form-grid two-columns">
-          <label>
-            Trigger
-            <input id="reply-trigger" maxlength="255" required autocomplete="off">
-          </label>
-          <label>
-            Match mode
-            <select id="reply-mode" required>
-              <option value="contains">Contains</option>
-              <option value="exact">Exact</option>
-              <option value="regex">Regex</option>
-            </select>
-          </label>
-        </div>
-        <label>
-          Response
-          <textarea id="reply-response" rows="8" maxlength="50000" required></textarea>
-        </label>
-        <label>
-          Priority
-          <input id="reply-priority" type="number" min="0" max="100000" value="100" required>
-        </label>
-        <label class="switch-row">
-          <span>Enabled</span>
-          <input id="reply-enabled" type="checkbox" checked>
-        </label>
-        <div class="modal-actions">
-          <button id="reply-cancel" class="secondary-button" type="button">Cancel</button>
-          <button class="primary-button" type="submit">Save</button>
-        </div>
+        <label><span data-i18n="automation.trigger"></span><input id="reply-trigger" maxlength="255" required></label>
+        <label><span data-i18n="automation.response"></span><textarea id="reply-response" rows="7" maxlength="50000" required></textarea></label>
+        <label><span data-i18n="automation.match_mode"></span><select id="reply-match-mode"></select></label>
+        <label><span data-i18n="automation.priority"></span><input id="reply-priority" type="number" min="0" max="100000" value="100" required></label>
+        <label class="checkbox-label"><input id="reply-enabled" type="checkbox"><span data-i18n="automation.enabled"></span></label>
+        <div class="modal-actions"><button id="reply-cancel" class="ghost-button" type="button"></button><button id="reply-submit" class="primary-button" type="submit"></button></div>
       </form>
     </dialog>
   </div>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js" defer></script>
 </body>
 </html>

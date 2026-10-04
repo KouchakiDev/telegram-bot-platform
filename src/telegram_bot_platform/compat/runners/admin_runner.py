@@ -34,6 +34,8 @@ import json
 from telegram_bot_platform.compat.utils.task_manager import ThreadManager
 from telebot import types
 import telebot
+from telegram_bot_platform.compat.localization import LocalizedTeleBot
+from telegram_bot_platform.compat.miniapp import send_mini_app
 from telebot.types import Message
 from telegram_bot_platform.compat.config.settings import *
 from telegram_bot_platform.compat.database.setup import DatabaseSetup
@@ -63,9 +65,9 @@ class AdminBot:
         self.db = db
 
         # Internal implementation note: legacy behavior is preserved during modernization.
-        self.bot = telebot.TeleBot(admin_token)
-        self.per_bot = telebot.TeleBot(staff_token)
-        self.cus_bot = telebot.TeleBot(client_token)
+        self.bot = LocalizedTeleBot(admin_token)
+        self.per_bot = LocalizedTeleBot(staff_token)
+        self.cus_bot = LocalizedTeleBot(client_token)
         self.T_M = ThreadManager()
         self.ProfPer = StaffProfileHandler(self.bot, db)
         # Internal implementation note: legacy behavior is preserved during modernization.
@@ -547,6 +549,10 @@ class AdminBot:
             self.send_welcome(message)
 
     def setup_handlers(self):
+        @self.bot.message_handler(commands=["app"])
+        def app_handler(message: Message):
+            send_mini_app(self.bot, message)
+
         """Legacy-compatible behavior preserved for this callable."""
         @self.bot.message_handler(regexp=r'^/p\d+$')
         def _handle_staff_command(message):

@@ -136,6 +136,49 @@ class OutboxMessageModel(Base):
     __table_args__ = (Index("ix_outbox_messages_pending", "status", "created_at"),)
 
 
+class LocalizationModel(Base):
+    __tablename__ = "localizations"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    key: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    locale: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
+    value: Mapped[str] = mapped_column(Text, nullable=False)
+    category: Mapped[str] = mapped_column(String(64), default="general", nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    is_system: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+    __table_args__ = (UniqueConstraint("key", "locale", name="uq_localizations_key_locale"),)
+
+
+class PlatformSettingModel(Base):
+    __tablename__ = "platform_settings"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    key: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    value_json: Mapped[Any] = mapped_column(JSON, nullable=True)
+    value_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    category: Mapped[str] = mapped_column(String(64), default="general", nullable=False)
+    is_secret: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    editable: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    restart_required: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    updated_by: Mapped[int | None] = mapped_column(BigInteger)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
+class BotProfileModel(Base):
+    __tablename__ = "bot_profiles"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    bot_key: Mapped[str] = mapped_column(String(64), unique=True, nullable=False, index=True)
+    name_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    token_env_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    username: Mapped[str | None] = mapped_column(String(255))
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    default_locale: Mapped[str] = mapped_column(String(16), default="en", nullable=False)
+    modules: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    updated_by: Mapped[int | None] = mapped_column(BigInteger)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
 class AuditEventModel(Base):
     __tablename__ = "audit_events"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

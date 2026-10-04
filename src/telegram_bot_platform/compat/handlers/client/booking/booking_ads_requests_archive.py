@@ -6,7 +6,8 @@ from telegram_bot_platform.compat.config.settings import *  # Internal implement
 from datetime import datetime ,timedelta 
 from telegram_bot_platform.compat.handlers.client.verification.identity_verification import *
 import re
-from telebot import types , TeleBot
+from telebot import types
+from telegram_bot_platform.compat.localization import LocalizedTeleBot as TeleBot
 from telegram_bot_platform.compat.database.database_manager import DatabaseManager
 # services/identity_verification_service.py
 # from database.DataBaseManager import DatabaseManager
@@ -33,8 +34,8 @@ class BookingHandler:
         self.premiumr = PREMIUMRegistration(bot, db, back_main, back_previous)
         self.profile = PREMIUMProfile(bot, db, back_main, back_previous, start)
         self.settings = REQUEST_SETTINGS
-        self.admin_bot = TeleBot(BOT_ADMIN_TOKEN)
-        self.staff_bot = TeleBot(BOT_STAFF_TOKEN)
+        self.admin_bot = LocalizedTeleBot(BOT_ADMIN_TOKEN)
+        self.staff_bot = LocalizedTeleBot(BOT_STAFF_TOKEN)
         
         # Internal implementation note: legacy behavior is preserved during modernization.
         self.current_request = {}

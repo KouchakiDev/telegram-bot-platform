@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import BeforeValidator, SecretStr
+from pydantic import AliasChoices, BeforeValidator, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -44,6 +44,16 @@ class Settings(BaseSettings):
 
     telegram_bot_token: SecretStr | None = None
     telegram_bot_username: str | None = None
+    bot_admin_token: SecretStr | None = None
+    bot_client_token: SecretStr | None = None
+    bot_staff_token: SecretStr | None = None
+    bot_autoresponder_token: SecretStr | None = Field(default=None, validation_alias=AliasChoices("BOT_AUTO_RESPONDER_TOKEN", "BOT_AUTOREPONSER_TOKEN"))
+    admin_bot_username: str | None = None
+    client_bot_username: str | None = None
+    staff_bot_username: str | None = None
+    admin_bot_id: str | None = None
+    client_bot_id: str | None = None
+    staff_bot_id: str | None = None
     default_channel_id: int | None = None
     admin_user_ids: AdminIdList = ()
     telegram_concurrent_updates: int = 8
@@ -78,7 +88,43 @@ class Settings(BaseSettings):
     auto_reply_cache_ttl_seconds: float = 30.0
     auto_reply_max_rules: int = 500
 
-    default_locale: str = "en"
+    default_locale: Literal["en", "fa"] = "en"
+
+    compat_channel_id: int = 0
+    compat_archive_channel_id: int = 0
+    compat_photos_channel_id: int = 0
+    profile_channel_tags: StringList = ()
+    db_name: str | None = None
+    db_host: str = "127.0.0.1"
+    db_user: str | None = None
+    db_password: SecretStr | None = None
+    db_port: int = 3306
+    db_locations: str = "./resources/locations.db"
+    images_dir: str = "./resources/images"
+    watermark_path: str = "./resources/images/H_waterMark.png"
+    primary_admin_id: int | None = None
+    primary_admin_username: str | None = None
+    primary_admin_name: str = "Platform Owner"
+    primary_admin_phone: SecretStr | None = None
+    admin_support_username: str | None = None
+    remote_host: str | None = None
+    remote_user: str | None = None
+    remote_pass: SecretStr | None = None
+    remote_upload_dir: str = "/tmp"
+    deploy_work_dir: str = "."
+    deploy_backup_dir: str = "backups"
+    deploy_zip_prefix: str = "telegram-bot-platform"
+    add_favorites_for_normal_users: bool = True
+    duration_time: int = 20
+    betwin_time: int = 30
+    multiplier_dispatch: int = 2
+
+    def configured_bot_tokens(self) -> tuple[tuple[str, str], ...]:
+        tokens: list[tuple[str, str]] = []
+        for key, token in (("core", self.telegram_bot_token), ("admin", self.bot_admin_token), ("client", self.bot_client_token), ("staff", self.bot_staff_token), ("auto_responder", self.bot_autoresponder_token)):
+            if token:
+                tokens.append((key, token.get_secret_value()))
+        return tuple(tokens)
 
     def require_bot_token(self) -> str:
         if not self.telegram_bot_token:

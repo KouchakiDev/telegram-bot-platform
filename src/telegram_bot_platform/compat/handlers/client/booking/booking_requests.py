@@ -5,6 +5,7 @@ from .booking_requests_core import BookingHandlerCoreMixin
 from .booking_requests_flows import BookingHandlerFlowsMixin
 from .booking_requests_data import BookingHandlerDataMixin
 from .booking_requests_integrations import BookingHandlerIntegrationsMixin
+from telegram_bot_platform.compat.localization import LocalizedTeleBot
 
 
 class BookingHandler(BookingHandlerCoreMixin, BookingHandlerFlowsMixin, BookingHandlerDataMixin, BookingHandlerIntegrationsMixin):
@@ -20,8 +21,8 @@ class BookingHandler(BookingHandlerCoreMixin, BookingHandlerFlowsMixin, BookingH
         self.premiumr = PREMIUMRegistration(bot, db, back_main, back_previous)
         self.profile = PREMIUMProfile(bot, db, back_main, back_previous, start)
         self.settings = REQUEST_SETTINGS
-        self.admin_bot = TeleBot(BOT_ADMIN_TOKEN)
-        self.staff_bot = TeleBot(BOT_STAFF_TOKEN)
+        self.admin_bot = LocalizedTeleBot(BOT_ADMIN_TOKEN)
+        self.staff_bot = LocalizedTeleBot(BOT_STAFF_TOKEN)
         # Internal implementation note: legacy behavior is preserved during modernization.
         self.current_request = {}
         # Internal implementation note: legacy behavior is preserved during modernization.
