@@ -6,8 +6,8 @@ from urllib.parse import quote
 
 import pytest
 
-from app.core.exceptions import AuthenticationError
-from app.web.telegram_auth import validate_init_data
+from telegram_bot_platform.core.exceptions import AuthenticationError
+from telegram_bot_platform.web.telegram_auth import validate_init_data
 
 
 def make_init_data(token: str, user_id: int = 123) -> str:

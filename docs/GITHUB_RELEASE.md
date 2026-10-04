@@ -1,16 +1,14 @@
 # GitHub Release Setup
 
-Recommended repository name:
+Repository:
 
-```text
-telegram-bot-platform
-```
+`https://github.com/KouchakiDev/telegram-bot-platform`
 
-Recommended description:
+## Recommended repository description
 
-> A modular, secure, configurable foundation for production-grade Telegram bots and Telegram Mini Apps.
+> Production-ready, modular Telegram bot platform for building scalable bots, Mini Apps, automation, admin panels, and custom workflows.
 
-Recommended topics:
+## Topics
 
 ```text
 telegram
@@ -23,38 +21,29 @@ asyncio
 sqlalchemy
 alembic
 docker
+modular-architecture
 ```
 
-## First push
-
-Create an empty public repository at:
-
-`https://github.com/KouchakiDev/telegram-bot-platform`
-
-Then from the project root:
+## Release checks
 
 ```bash
-git init
-git branch -M main
-git add .
-git commit -m "chore: initial public release"
-git remote add origin https://github.com/KouchakiDev/telegram-bot-platform.git
-git push -u origin main
-```
-
-Do not commit `.env`, local databases, log files, virtual environments, exports, bot tokens, or other credentials. The repository `.gitignore` and `.dockerignore` already exclude the common cases.
-
-## Release checklist
-
-Before publishing a production instance:
-
-```bash
-python -m compileall -q app scripts tests
+python scripts/verify_parity.py
+python -m compileall -q src scripts tests
+pytest
 ruff format --check .
 ruff check .
-mypy app
+mypy src/telegram_bot_platform
 pip-audit
-pytest
 ```
 
-Also run the Docker build and a controlled staging test with a non-production bot/database.
+The optional compatibility runtime must also be exercised in staging when it is enabled:
+
+```bash
+pip install -e ".[legacy,legacy-db]"
+platform-run-compat admin
+platform-run-compat client
+platform-run-compat staff
+platform-run-compat auto-responder
+```
+
+Do not commit `.env`, production databases, generated exports, tokens, passwords, private keys, or user data.

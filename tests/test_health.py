@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
-from app.core.config import Settings
-from app.web.app import create_app
+from telegram_bot_platform.core.config import Settings
+from telegram_bot_platform.web.app import create_app
 
 
 def test_live_health() -> None:

@@ -7,11 +7,11 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.domain.entities import ScheduledJobInput
-from app.domain.enums import TaskKind, TaskStatus
-from app.infrastructure.db.base import Base
-from app.infrastructure.db import models  # noqa: F401
-from app.infrastructure.repositories.work import WorkRepository
+from telegram_bot_platform.domain.entities import ScheduledJobInput
+from telegram_bot_platform.domain.enums import TaskKind, TaskStatus
+from telegram_bot_platform.infrastructure.db.base import Base
+from telegram_bot_platform.infrastructure.db import models  # noqa: F401
+from telegram_bot_platform.infrastructure.repositories.work import WorkRepository
 
 
 @pytest.mark.asyncio

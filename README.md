@@ -4,9 +4,9 @@
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-3776AB.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A modular, secure, configurable foundation for building production-grade Telegram bots and Telegram Mini Apps.
+A modular, secure, configurable foundation for building production-grade Telegram bots and Mini Apps, with a complete responsive operations console and the original application feature set preserved under a compatibility layer for non-destructive modernization.
 
-This repository is intentionally **domain-neutral**. It is not tied to one business, channel, workflow, or bot concept. Use the same platform as a starting point for community bots, customer-service bots, internal operations bots, content publishing systems, notification bots, automation bots, or custom business workflows. The core provides reusable platform primitives; a production deployment should add only the domain modules it actually needs.
+This repository is intentionally **domain-neutral**. User-facing defaults are designed for lawful commerce, service delivery, support, community, automation, and content channels and are reviewed to avoid legacy sensitive positioning. See `docs/CONTENT_POLICY.md`. It is not tied to one business, channel, workflow, or bot concept. Use the same platform as a starting point for community bots, client-service bots, internal operations bots, content publishing systems, notification bots, automation bots, or custom business workflows. The core provides reusable platform primitives, while the preserved compatibility layer keeps the original production workflows available during migration. Domain-specific behavior should be expressed through focused feature modules rather than hard-coded into transport handlers.
 
 ## What is included
 
@@ -18,14 +18,14 @@ This repository is intentionally **domain-neutral**. It is not tied to one busin
 - Explicit Telegram permission boundaries instead of assuming capabilities the Bot API does not provide.
 - Thin Telegram adapters that delegate business behavior to application services.
 
-### Users, customers, staff, and administration
+### Users, clients, staff, and administration
 
 - Persistent Telegram user and chat registry.
-- Reusable roles: `owner`, `admin`, `manager`, `staff`, `support`, `moderator`, `analyst`, `customer`, and `member`.
+- Reusable roles: `owner`, `admin`, `manager`, `staff`, `support`, `moderator`, `analyst`, `client`, and `member`.
 - Bootstrap administrators from environment configuration.
 - Audit trail for important administrative/application actions.
 - Blocked-user state and language preference tracking.
-- A foundation for customer-support, staff, moderation, and internal-operation workflows without coupling them to Telegram handlers.
+- A foundation for client-support, staff, moderation, and internal-operation workflows without coupling them to Telegram handlers.
 
 ### Content and automation
 
@@ -42,8 +42,26 @@ This repository is intentionally **domain-neutral**. It is not tied to one busin
 - Telegram Mini App authentication using server-side `initData` verification.
 - Signed, time-limited sessions.
 - Admin-aware API routes.
-- Responsive mobile-first frontend that can be extended into a full application dashboard.
+- Complete responsive Mini App console with dashboard, content lifecycle, scheduling, auto-reply management, chat module controls, role management, audit activity, settings, loading states, error handling, and Telegram theme integration.
 - Liveness and database readiness endpoints.
+
+
+### Mini App console
+
+The bundled Mini App is a real operations console rather than a placeholder. It authenticates the Telegram user server-side, creates a signed HTTP session, adapts to Telegram theme/safe-area values, and exposes only actions allowed by the authenticated role. Telegram recommends mobile-first responsive interfaces, dynamic theme handling, and safe-area support for Mini Apps. citeturn229984search0turn229984search1
+
+For administrators, the console provides:
+
+- Dashboard and runtime status
+- Content creation, editing, publishing, archiving, and scheduling
+- Scheduled-job inspection and cancellation
+- Auto-reply CRUD, priority, match mode, enable/disable, and usage counts
+- Registered chat inspection and module toggles
+- User registry and persistent role management
+- Read-only audit activity
+- Safe runtime settings view with secrets excluded
+
+The backend endpoints are under `/api/` and require the signed session cookie. Telegram `initData` is verified on the server before that session is issued.
 
 ### Infrastructure and operations
 
@@ -104,14 +122,15 @@ The key rule is simple: **Telegram and HTTP transport code should translate inpu
 
 ```text
 telegram-bot-platform/
-├── app/
-│   ├── application/          # use cases and orchestration
+├── src/telegram_bot_platform/
+│   ├── application/          # use cases, orchestration, feature services
 │   ├── core/                 # settings, errors, logging, limits, DI container
-│   ├── domain/               # stable business concepts and policies
+│   ├── domain/               # stable platform concepts and policies
 │   ├── infrastructure/       # DB models, sessions, repositories, external I/O
-│   ├── telegram/             # Telegram adapters/modules
+│   ├── telegram/             # modern Telegram adapters/modules
 │   ├── web/                  # FastAPI + Mini App authentication/session
-│   └── workers/              # scheduled/outbox/background processing
+│   ├── workers/              # background processing
+│   └── compat/              # preserved and decomposed original logic
 ├── frontend/                 # Telegram Mini App frontend
 ├── migrations/               # Alembic migrations
 ├── scripts/                  # operational/maintenance commands
@@ -211,6 +230,41 @@ docker compose up --build
 
 The default web endpoint is `http://localhost:8000`.
 
+## Parity runtime
+
+The modern entry points (`platform-bot`, `platform-web`, and `platform-worker`) expose the new typed platform foundation. The full preserved production feature set remains available through the opt-in compatibility runner so migration can happen incrementally without losing legacy workflows:
+
+```bash
+platform-run-compat admin
+platform-run-compat client
+platform-run-compat staff
+platform-run-compat auto-responder
+```
+
+Use `platform-run-compat` when you need the legacy-compatible workflow surface; use the modern entry points for new development.
+
+## Original feature parity
+
+This release is based on the uploaded production code rather than a clean-room replacement. All **67 original Python modules** are represented under `src/telegram_bot_platform/compat`, with the original AST inventory of **88 classes** and **1,511 functions/methods** preserved. The largest classes were decomposed into focused mixins where that could be done without removing callable behavior.
+
+Run the parity check at any time:
+
+```bash
+python scripts/verify_parity.py
+```
+
+The detailed inventory lives in [`docs/logic_parity_manifest.json`](docs/logic_parity_manifest.json) and the capability map in [`docs/FEATURE_PARITY.md`](docs/FEATURE_PARITY.md).
+
+For the preserved runner topology, install the compatibility dependencies and use:
+
+```bash
+pip install -e ".[legacy,legacy-db]"
+platform-run-compat admin
+platform-run-compat client
+platform-run-compat staff
+platform-run-compat auto-responder
+```
+
 ## Environment configuration
 
 Configuration is loaded through `pydantic-settings`. The application supports:
@@ -249,7 +303,7 @@ staff
 support
 moderator
 analyst
-customer
+client
 member
 ```
 
@@ -297,10 +351,10 @@ See [`docs/DATA_IMPORT.md`](docs/DATA_IMPORT.md).
 The same checks are run in GitHub Actions:
 
 ```bash
-python -m compileall -q app scripts tests
+python -m compileall -q src scripts tests
 ruff format --check .
 ruff check .
-mypy app
+mypy src/telegram_bot_platform
 pip-audit
 pytest
 ```

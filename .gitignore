@@ -13,6 +13,10 @@ htmlcov/
 *.sqlite3
 *.db-wal
 *.db-shm
+
+# Keep bundled public reference data; runtime databases stay ignored.
+!resources/locations.db
+!resources/**/*.db
 data/*
 !data/.gitkeep
 logs/*

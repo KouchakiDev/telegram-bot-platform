@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from app.domain.enums import UserRole
-from app.infrastructure.db.base import Base
-from app.infrastructure.repositories.roles import UserRoleRepository
+from telegram_bot_platform.domain.enums import UserRole
+from telegram_bot_platform.infrastructure.db.base import Base
+from telegram_bot_platform.infrastructure.repositories.roles import UserRoleRepository
 
 pytest.importorskip("aiosqlite")
 

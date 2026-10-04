@@ -1,27 +1,31 @@
-# Repository Audit Summary
+# Baseline Audit and Preservation Record
 
-The source archive was inspected before modernization. The baseline contained:
+The original uploaded project was audited before modernization. The source archive contained **67 Python modules**, approximately **49,318 Python lines**, **88 classes**, and **1,511 functions/methods** when counted with the Python AST.
 
-- 67 Python modules plus configuration and deployment assets
-- multiple Telegram bot runners and multiple Telegram libraries in the dependency set
-- two independent database-manager implementations
-- several oversized handler/manager modules, including modules exceeding 4,000 lines
-- process-local user state and background threads mixed with synchronous Telegram/database calls
-- several legacy runner copies retained beside current runners
-- configuration constants mixed with secrets, identifiers, UX strings, schema rules, and product-specific logic
-- database helpers supporting several unrelated database engines through one shared connection/cursor design
-- broad exception handling and numerous blocking calls in code paths that should be non-blocking
-- development hot-reload behavior embedded in the container startup path
-- a deployment configuration that embedded database credentials and mounted the entire source tree into production containers
+The baseline also contained multiple Telegram bot runners, more than one Telegram framework, two independent database-manager implementations, large handler/manager classes, legacy runner copies, process/thread based state management, mixed synchronous and asynchronous I/O, hard-coded deployment values, and several broad exception handlers.
 
-The modernization replaces those failure modes with explicit application boundaries, a single Telegram adapter, async database sessions, migrations, signed sessions, bounded caches, a worker/outbox design, structured logging, and container separation.
+## Preservation policy
 
-## Removed or replaced categories
+This release is **parity-first**. The original executable logic was transformed into a neutral compatibility namespace under `telegram_bot_platform.compat` and then decomposed into smaller mixins where the class boundary allowed a behavior-preserving extraction.
 
-The final distribution contains no legacy product-specific terminology, source modules, branding, routes, or user-facing strings. Domain-specific flows were replaced with neutral content, automation, moderation-ready, notification, administration, and chat-management primitives.
+The migration does **not** use a small replacement application as a substitute for the original feature set. The compatibility tree contains the migrated production logic, while the modern typed application/domain/infrastructure layers provide the preferred foundation for new work.
 
-Legacy source files were not copied into the final runtime tree. This prevents the obsolete behavior from remaining reachable through an accidental import path.
+## Major modernization actions
 
-## Verification limitations
+- Centralized configuration with environment-driven values and compatibility aliases.
+- Removed real secrets and private production credentials from the distribution.
+- Replaced product-specific branding and sensitive domain terminology with neutral platform terminology.
+- Added explicit application, domain, infrastructure, Telegram, web, and worker boundaries.
+- Added structured logging, rate limiting, signed Mini App sessions, and input validation.
+- Added Alembic migrations, repository boundaries, Docker, health checks, and CI scaffolding.
+- Decomposed the largest reusable classes into lifecycle, schema, data, settings, transaction, execution, navigation, and other focused mixins without reducing the original function/method inventory.
 
-The build environment used for this migration could not download additional packages from the public package index, so the final dependency graph was validated statically and through tests that do not import the unavailable Telegram package. The declared Telegram integration targets the current documented 22.x API surface; the CI pipeline performs the authoritative install, lint, type-check, and test run in a networked environment.
+## Current parity measurement
+
+The release inventory covers all 67 original Python modules. The destination tree contains the same **1,511 functions/methods** and at least the original **88 classes**; extra classes are decomposition mixins and modern platform components.
+
+See `docs/logic_parity_manifest.json` and `scripts/verify_parity.py`.
+
+## Runtime verification limits
+
+The sandbox used for this migration did not contain every optional legacy dependency and could not perform a live Telegram or broker integration. Syntax validation, local import-target resolution, parity inventory verification, and the available automated test suite were executed locally. The networked GitHub CI workflow remains the final dependency-installation and integration-validation environment.

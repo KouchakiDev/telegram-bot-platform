@@ -3,9 +3,9 @@ pytest.importorskip("aiosqlite")
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.application.services.content_service import ContentService
-from app.infrastructure.db.base import Base
-from app.infrastructure.db import models  # noqa: F401
+from telegram_bot_platform.application.services.content_service import ContentService
+from telegram_bot_platform.infrastructure.db.base import Base
+from telegram_bot_platform.infrastructure.db import models  # noqa: F401
 
 
 @pytest.fixture

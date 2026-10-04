@@ -23,12 +23,12 @@ jobs:
           cache: pip
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev]"
-      - run: python -m compileall -q app scripts tests
+      - run: python -m compileall -q src scripts tests
       - run: ruff format --check .
       - run: ruff check .
-      - run: mypy app
+      - run: mypy src/telegram_bot_platform
       - run: pip-audit
-      - run: pytest --cov=app --cov-report=term-missing
+      - run: pytest --cov=telegram_bot_platform --cov-report=term-missing
 
   package:
     name: Build package

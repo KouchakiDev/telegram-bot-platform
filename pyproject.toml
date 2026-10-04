@@ -1,16 +1,16 @@
 [build-system]
-requires = ["hatchling>=1.26"]
+requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
 name = "telegram-bot-platform"
-version = "1.1.0"
-description = "A modular, secure foundation for production-grade Telegram bots and Mini Apps."
+version = "2.1.2"
+description = "A production-grade, domain-neutral Telegram bot platform with preserved feature parity and a modern typed architecture."
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
-license = { file = "LICENSE" }
+license = { text = "MIT" }
 authors = [{ name = "KouchakiDev" }]
-keywords = ["telegram", "telegram-bot", "python", "fastapi", "mini-app", "automation", "asyncio"]
+keywords = ["telegram", "telegram-bot", "python", "fastapi", "mini-app", "automation", "asyncio", "modular"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Framework :: FastAPI",
@@ -28,6 +28,7 @@ Homepage = "https://github.com/KouchakiDev/telegram-bot-platform"
 Repository = "https://github.com/KouchakiDev/telegram-bot-platform"
 Issues = "https://github.com/KouchakiDev/telegram-bot-platform/issues"
 
+# Modern runtime: the supported, typed application layer.
 dependencies = [
   "alembic>=1.18,<2",
   "aiomysql>=0.2,<1",
@@ -43,7 +44,29 @@ dependencies = [
   "uvicorn[standard]>=0.40,<1",
 ]
 
+# The preserved production feature set is optional so the modern core stays small.
 [project.optional-dependencies]
+legacy = [
+  "APScheduler>=3.11.3,<4",
+  "Pillow>=11.3,<13",
+  "XlsxWriter>=3.2,<4",
+  "PyTelegramBotAPI>=4.37,<5",
+  "Telethon>=1.45,<2",
+  "arabic-reshaper>=3,<4",
+  "colorama>=0.4,<1",
+  "jdatetime>=5.2,<6",
+  "pandas>=2.2,<3",
+  "persiantools>=5.2,<6",
+  "python-bidi>=0.6,<1",
+  "python-dotenv>=1,<2",
+  "requests>=2.32,<3",
+  "paramiko>=4,<5",
+]
+legacy-db = [
+  "mysql-connector-python>=9.5,<10",
+  "psycopg2-binary>=2.9,<3",
+  "pyodbc>=5.2,<6",
+]
 dev = [
   "build>=1.3,<2",
   "mypy>=1.18,<2",
@@ -55,20 +78,24 @@ dev = [
 ]
 
 [project.scripts]
-platform-bot = "app.telegram.bot:main"
-platform-web = "app.web.app:main"
-platform-worker = "app.workers.main:main"
+platform-bot = "telegram_bot_platform.telegram.bot:main"
+platform-web = "telegram_bot_platform.web.app:main"
+platform-worker = "telegram_bot_platform.workers.main:main"
 platform-migrate = "scripts.migrate:main"
 platform-import = "scripts.import_json:main"
 platform-bootstrap-admin = "scripts.bootstrap_admin:main"
+platform-run-compat = "scripts.run_compat:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["app", "frontend", "migrations", "scripts"]
+packages = ["src/telegram_bot_platform", "scripts"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "scripts", "migrations", "frontend", "tests", "docs", "README.md", "LICENSE", "VERSION", "pyproject.toml"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = ["migrations"]
+extend-exclude = ["migrations", "src/telegram_bot_platform/compat"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC", "S"]
@@ -80,7 +107,7 @@ strict = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 no_implicit_optional = true
-exclude = ["^migrations/"]
+exclude = ["^migrations/", "^src/telegram_bot_platform/compat/"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

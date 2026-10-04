@@ -1,4 +1,4 @@
-from app.core.rate_limit import SlidingWindowGate
+from telegram_bot_platform.core.rate_limit import SlidingWindowGate
 
 
 def test_gate_rejects_after_limit() -> None:

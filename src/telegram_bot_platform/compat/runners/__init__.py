@@ -1,0 +1,1 @@
+"""Compatibility-preserving platform module."""

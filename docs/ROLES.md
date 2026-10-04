@@ -11,7 +11,7 @@ The platform includes a reusable role vocabulary so deployments can model common
 | `support` | User/customer support |
 | `moderator` | Content and community moderation |
 | `analyst` | Reporting and read-oriented operations |
-| `customer` | End-user/customer workflow |
+| `client` | End-user/customer workflow |
 | `member` | General participant |
 
 Roles are stored in the database and are intentionally separate from Telegram usernames. Authorization should always use stable Telegram IDs and explicit role/permission checks.

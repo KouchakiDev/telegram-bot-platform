@@ -1,7 +1,7 @@
 import pytest
 
-from app.application.services.admin_service import AdminService
-from app.core.exceptions import AuthorizationError
+from telegram_bot_platform.application.services.admin_service import AdminService
+from telegram_bot_platform.core.exceptions import AuthorizationError
 
 
 class FakeResult:

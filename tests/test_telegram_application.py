@@ -5,8 +5,8 @@ pytest.importorskip("telegram")
 pytest.importorskip("aiolimiter")
 pytest.importorskip("aiosqlite")
 
-from app.core.config import Settings
-from app.telegram.bot import build_application
+from telegram_bot_platform.core.config import Settings
+from telegram_bot_platform.telegram.bot import build_application
 
 
 @pytest.mark.asyncio

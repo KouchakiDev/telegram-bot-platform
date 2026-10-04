@@ -6,7 +6,7 @@ Describe what changed and why.
 
 - [ ] `pytest`
 - [ ] `ruff check .`
-- [ ] `mypy app`
+- [ ] `mypy src/telegram_bot_platform`
 - [ ] `pip-audit`
 - [ ] Docker build (when infrastructure changed)
 
