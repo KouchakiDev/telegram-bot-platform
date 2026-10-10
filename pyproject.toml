@@ -63,7 +63,7 @@ legacy = [
   "paramiko>=4,<5",
 ]
 legacy-db = [
-  "mysql-connector-python>=9.5,<10",
+  "mysql-connector-python>=9.5,<27",
   "psycopg2-binary>=2.9,<3",
   "pyodbc>=5.2,<6",
 ]
